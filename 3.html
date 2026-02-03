@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אנימה אונליין - האנימות המתורגמות שלי</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* עיצוב כללי */
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background-color: #121212; 
+            color: white; 
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh; 
+        }
+
+        /* סרגל עליון בסגנון אנימה פלוס */
+        .top-nav {
+            background-color: #1f1f1f;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            border-bottom: 2px solid #ff4500;
+        }
+
+        .nav-btn {
+            background: none;
+            border: 1px solid #ff4500;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #ff4500;
+        }
+
+        header { text-align: center; padding: 20px 10px; }
+        h1 { 
+            color: #ff4500; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); 
+            font-size: 2rem; 
+        }
+
+        /* סרגל חיפוש */
+        .search-wrapper { 
+            margin-bottom: 30px; 
+            display: flex; 
+            justify-content: center; 
+            padding: 0 15px;
+        }
+        #searchInput { 
+            width: 100%; 
+            max-width: 500px; 
+            padding: 12px 20px; 
+            background: #1a1a1a; 
+            border: 1px solid #333; 
+            border-radius: 8px; 
+            color: white; 
+            outline: none; 
+            font-size: 16px; 
+        }
+
+        /* מודאלים (חלונות קופצים) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: #1f1f1f;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #ff4500;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            left: 20px;
+            top: 10px;
+            color: #aaa;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .modal h2 { color: #ff4500; text-align: center; }
+
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            background: #2b2b2b;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .toggle-password {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff4500;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .form-footer {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .form-footer a { color: #ff4500; text-decoration: none; cursor: pointer; }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        /* גריד אנימה */
+        .anime-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+            gap: 15px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
+
+        .anime-card { 
+            background: #1f1f1f; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            text-decoration: none; 
+            color: white; 
+            transition: 0.3s ease; 
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .anime-card:hover { transform: translateY(-5px); border-color: #ff4500; }
+        .anime-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .anime-card h3 { padding: 10px; text-align: center; font-size: 0.9rem; flex-grow: 1; }
+
+        @media (min-width: 768px) {
+            .anime-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+            h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-nav">
+    <button class="nav-btn" onclick="openModal('loginModal')">להתחבר</button>
+    <button class="nav-btn" onclick="openModal('registerModal')">להירשם</button>
+</div>
+
+<header>
+    <h1>אנימה אונליין</h1>
+    <div class="search-wrapper">
+        <input type="text" id="searchInput" onkeyup="filterAnime()" placeholder="חפש אנימה מהרשימה...">
+    </div>
+</header>
+
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('loginModal')">&times;</span>
+        <h2>התחברות</h2>
+        <div class="input-group">
+            <input type="email" placeholder="אימייל">
+        </div>
+        <div class="input-group">
+            <input type="password" id="loginPass" placeholder="סיסמה">
+            <i class="fas fa-eye toggle-password" onclick="togglePass('loginPass')"></i>
+        </div>
+        <div class="form-footer" style="text-align: right;">
+            <a onclick="alert('נשלח שחזור לסיסמה!')">שכחת סיסמה?</a>
+        </div>
+        <button class="submit-btn">להתחבר</button>
+        <div class="form-footer">
+            אין לך חשבון? <a onclick="switchModal('loginModal', 'registerModal')">הרשמה</a>
+        </div>
+    </div>
+</div>
+
+<div id="registerModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('registerModal')">&times;</span>
+        <h2>הרשמה לאתר</h2>
+        <div class="input-group"><input type="email" placeholder="כתובת מייל"></div>
+        <div class="input-group"><input type="text" placeholder="שם פרטי"></div>
+        <div class="input-group"><input type="text" placeholder="שם משפחה"></div>
+        <div class="input-group"><input type="text" placeholder="כינוי"></div>
+        <div class="input-group">
+            <input type="password" id="regPass" placeholder="סיסמה">
+            <i class="fas fa-eye toggle-password" onclick="togglePass('regPass')"></i>
+        </div>
+        <div class="input-group">
+            <input type="password" id="regPassConfirm" placeholder="אישור סיסמה">
+            <i class="fas fa-eye toggle-password" onclick="togglePass('regPassConfirm')"></i>
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="terms">
+            <label for="terms">אני מאשר/ת שקראתי את <a onclick="alert('תנאי שימוש: שימוש הוגן באתר, ללא פגיעה בזכויות יוצרים.')">תנאי השימוש</a> ו<a onclick="alert('מדיניות פרטיות: המידע שלך נשמר במערכת המאובטחת שלנו בלבד.')">מדיניות האתר</a></label>
+        </div>
+        <button class="submit-btn">צור חשבון</button>
+        <div class="form-footer">
+            כבר רשום? <a onclick="switchModal('registerModal', 'loginModal')">התחברות</a>
+        </div>
+    </div>
+</div>
+
+<div class="anime-grid" id="animeGrid">
+    <a href="episodes.html" class="anime-card" data-name="הנבלית שזכתה לאהבת נסיך הממלכה השכנה">
+        <img src="https://img.aniplus.co/Imgs/animePictures/1766486731352_anime.jpg" alt="פוסטר">
+        <h3>הנבלית שזכתה לאהבת נסיך הממלכה השכנה</h3>
+    </a>
+
+    <a href="anyway.html" class="anime-card" data-name="בכל מקרה אני מתאהב בך">
+        <img src="https://m.media-amazon.com/images/M/MV5BZmE3NzI2MjUtZGQ4Yi00YWRjLTg0OWUtNmU4ZTdlY2Q3ODAxXkEyXkFqcGc@._V1_.jpg" alt="פוסטר">
+        <h3>בכל מקרה אני מתאהב בך עונה 2</h3>
+    </a>
+
+    <a href="Glitter Force.html" class="anime-card" data-name="גליטר פורס">
+        <img src="https://preview.redd.it/what-are-yalls-opinion-on-glitter-force-i-obv-dont-support-v0-ygmkcpp8nsma1.jpg?width=640&crop=smart&auto=webp&s=402ceecfd6b8d05d9f530432268920f956fa41f0" alt="פוסטר">
+        <h3>גליטר פורס</h3>
+    </a>
+</div>
+
+<script>
+    // פונקציית החיפוש הקיימת שלך
+    function filterAnime() {
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        let cards = document.getElementsByClassName('anime-card');
+        for (let i = 0; i < cards.length; i++) {
+            let name = cards[i].getAttribute('data-name');
+            cards[i].style.display = name.toLowerCase().includes(input) ? "flex" : "none";
+        }
+    }
+
+    // ניהול מודאלים
+    function openModal(id) {
+        document.getElementById(id).style.display = "block";
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+    }
+
+    function switchModal(from, to) {
+        closeModal(from);
+        openModal(to);
+    }
+
+    // פונקציית העין לסיסמה
+    function togglePass(id) {
+        const input = document.getElementById(id);
+        const icon = input.nextElementSibling;
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    // סגירת מודאל בלחיצה בחוץ
+    window.onclick = function(event) {
+        if (event.target.className === 'modal') {
+            event.target.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>
